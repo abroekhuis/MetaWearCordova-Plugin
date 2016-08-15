@@ -33,6 +33,7 @@ import com.mbientlab.metawear.Message;
 import com.mbientlab.metawear.UnsupportedModuleException;
 import com.mbientlab.metawear.module.Gpio.AnalogReadMode;
 import com.mbientlab.metawear.module.Gpio.PullMode;
+import com.mbientlab.metawear.module.Settings;
 
 /**
  *
@@ -61,6 +62,8 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     public static final String STOP_STEP_COUNTER = "stopStepCounter";
     public static final String START_GYROSCOPE = "startGyroscope";
     public static final String STOP_GYROSCOPE = "stopGyroscope";
+    public static final String START_MAGNETOMETER = "startMagnetometer";
+    public static final String STOP_MAGNETOMETER = "stopMagnetometer";
     public static final String GPIO_READ_ANALOG = "gpioReadAnalogIn";
     public static final String GPIO_READ_DIGITAL = "gpioReadDigitalIn";
     public static final String SUPPORTED_MODULES = "supportedModules";
@@ -81,6 +84,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     private MWAccelerometer mwAccelerometer;
     private StepCounter stepCounter;
     private MWGyroscope mwGyroscope;
+    private MWMagnetometer mwMagnetometer;
     private BluetoothScanner bluetoothScanner;
     private GpioModule gpioModule;
     
@@ -105,6 +109,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         mwMultiChannelTemperature = new MWMultiChannelTemperature(this);
         stepCounter = new StepCounter(this);
         mwGyroscope = new MWGyroscope(this);
+        mwMagnetometer = new MWMagnetometer(this);
         gpioModule = new GpioModule(this);
         mwCallbackContexts = new HashMap<String, CallbackContext>(); 
         bluetoothScanner = new BluetoothScanner(this);
@@ -169,7 +174,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
             return true;
         } else if(action.equals(START_ACCELEROMETER)){
             mwCallbackContexts.put(START_ACCELEROMETER, callbackContext);
-            mwAccelerometer.startAccelerometer();
+            mwAccelerometer.startAccelerometer(args);
             return true;
         } else if(action.equals(STOP_ACCELEROMETER)){
             mwAccelerometer.stopAccelerometer();
@@ -187,10 +192,17 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
             return true;
         }  else if(action.equals(START_GYROSCOPE)){
             mwCallbackContexts.put(START_GYROSCOPE, callbackContext);
-            mwGyroscope.startGyroscope();
+            mwGyroscope.startGyroscope(args);
             return true;
         } else if(action.equals(STOP_GYROSCOPE)){
             mwGyroscope.stopGyroscope();
+            return true;
+        }  else if(action.equals(START_MAGNETOMETER)){
+            mwCallbackContexts.put(START_MAGNETOMETER, callbackContext);
+            mwMagnetometer.startMagnetometer(args);
+            return true;
+        } else if(action.equals(STOP_MAGNETOMETER)){
+            mwMagnetometer.stopMagnetometer();
             return true;
         } else if(action.equals(GPIO_READ_ANALOG)){
             int pin = (Integer) args.get(0);
@@ -256,6 +268,9 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
 
         // Create a MetaWear board object for the Bluetooth Device
         mwBoard= serviceBinder.getMetaWearBoard(remoteDevice);
+
+
+
         return(mwBoard);
     }
 

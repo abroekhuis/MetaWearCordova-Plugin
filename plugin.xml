@@ -42,6 +42,7 @@
     <source-file src='src/android/StepCounter.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/LEDModule.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/MWGyroscope.java' target-dir='src/com/mbientlab/metawear/cordova'/>
+    <source-file src='src/android/MWMagnetometer.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/BluetoothScanner.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/GpioModule.java' target-dir='src/com/mbientlab/metawear/cordova'/>
   </platform>

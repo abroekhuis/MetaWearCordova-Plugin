@@ -77,14 +77,26 @@ public class MWGyroscope{
         return gyroModule;
     }
 
-    public void startGyroscope(){
+    public void startGyroscope(JSONArray arguments){
+        Bmi160Gyro.OutputDataRate outputDataRate = null;//Bmi160Gyro.OutputDataRate.ODR_100_HZ;
+        Bmi160Gyro.FullScaleRange fullScaleRange = null;//Bmi160Gyro.FullScaleRange.FSR_2000;
+
+        try {
+            Log.i("MetaWear Plugin", "Args: " + arguments.toString());
+            JSONObject argumentObject = arguments.getJSONObject(0);
+            outputDataRate = Bmi160Gyro.OutputDataRate.valueOf(argumentObject.getString("outputDataRate"));
+            fullScaleRange = Bmi160Gyro.FullScaleRange.valueOf(argumentObject.getString("fullScaleRange"));
+        } catch(JSONException e){
+            Log.e("MetaWear Plugin", "Error parsing arguments", e);
+        }
+
         Log.v("MetaWear", " start Gryoscope");
         Bmi160Gyro gyroModule = getGyroscope();
         
         if(gyroModule != null){
             gyroModule.configure()
-                .setFullScaleRange(Bmi160Gyro.FullScaleRange.FSR_2000)
-                .setOutputDataRate(Bmi160Gyro.OutputDataRate.ODR_100_HZ)
+                .setFullScaleRange(fullScaleRange)
+                .setOutputDataRate(outputDataRate)
                 .commit();
 
             gyroModule.routeData()

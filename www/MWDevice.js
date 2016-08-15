@@ -102,9 +102,9 @@ module.exports.stopLED = function(){
     exec(null, null, "MWDevice", "stopLED", []);
 };
 
-module.exports.startAccelerometer = function(success, failure){
+module.exports.startAccelerometer = function(success, failure, accelerometerArguments){
     console.log("MWDevice.js: start Accelerometer");
-    exec(success, failure, "MWDevice", 'startAccelerometer', []);
+    exec(success, failure, "MWDevice", 'startAccelerometer', [accelerometerArguments]);
 }
 
 module.exports.stopAccelerometer = function(){
@@ -140,12 +140,22 @@ module.exports.gpioReadAnalogIn = function(pin, success, failure, pullup, readMo
     exec(success, failure, "MWDevice", 'gpioReadAnalogIn', [Number(pin),pullup,readMode]);
 }
 
-module.exports.startGyroscope = function(success, failure){
+module.exports.startGyroscope = function(success, failure, gyroscopeArguments){
     console.log("MWDevice.js: start Gyroscope");
-    exec(success, failure, "MWDevice", 'startGyroscope', []);
+    exec(success, failure, "MWDevice", 'startGyroscope', [gyroscopeArguments]);
 }
 
 module.exports.stopGyroscope = function(){
     console.log("MWDevice.js: stopGyroscope");
     exec(null, null, "MWDevice", 'stopGyroscope', []);
+}
+
+module.exports.startMagnetometer = function(success, failure, magnetometerArguments){
+    console.log("MWDevice.js: start Magnetometer");
+    exec(success, failure, "MWDevice", 'startMagnetometer', [magnetometerArguments]);
+}
+
+module.exports.stopMagnetometer = function(){
+    console.log("MWDevice.js: stopMagnetometer");
+    exec(null, null, "MWDevice", 'stopMagnetometer', []);
 }
