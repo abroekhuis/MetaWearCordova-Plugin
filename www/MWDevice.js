@@ -28,6 +28,16 @@ module.exports.scanForDevices = function(success, failure){
     exec(success, failure, "MWDevice", 'scanForDevices', []);
 }
 
+module.exports.setAdvertisingParameters = function(parameters) {
+    console.log('MWDevice.js: setAdvertisingParameters');
+    exec(null, null, 'MWDevice', 'setAdvertisingParameters', [parameters]);
+};
+
+module.exports.setConnectionParameters = function(parameters) {
+    console.log('MWDevice.js: setConnectionParameters');
+    exec(null, null, 'MWDevice', 'setConnectionParameters', [parameters]);
+};
+
 module.exports.supportedModules = function(success, failure){
     console.log("MWDevice.js: supportedModules");
     exec(success, failure, "MWDevice", 'supportedModules', []);

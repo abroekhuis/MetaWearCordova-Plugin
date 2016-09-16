@@ -69,6 +69,8 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     public static final String SUPPORTED_MODULES = "supportedModules";
     public static final String STATUS = "status";
     public static final String MODULE_NOT_SUPPORTED = "MODULE_NOT_SUPPORTED";
+    public static final String SET_ADVERTISING_PARAMETERS = "setAdvertisingParameters";
+    public static final String SET_CONNECTION_PARAMETERS = "setConnectionParameters";
 
     private MetaWearBleService.LocalBinder serviceBinder;
 
@@ -76,6 +78,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     private MetaWearBoard mwBoard;
     private HashMap<String, CallbackContext> mwCallbackContexts;
     private boolean initialized = false;
+    private boolean bound = false;
     private SupportedModules supportedModules;
     private RSSI rssi;
     private LEDModule ledModule;
@@ -87,6 +90,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     private MWMagnetometer mwMagnetometer;
     private BluetoothScanner bluetoothScanner;
     private GpioModule gpioModule;
+    private MWSettings mwSettings;
     
     /**
      * Constructor.
@@ -113,6 +117,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         gpioModule = new GpioModule(this);
         mwCallbackContexts = new HashMap<String, CallbackContext>(); 
         bluetoothScanner = new BluetoothScanner(this);
+        mwSettings = new MWSettings(this);
         Context applicationContext = cordova.getActivity().getApplicationContext();
         applicationContext.bindService(
                                        new Intent(cordova.getActivity(),
@@ -131,12 +136,19 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     }
 
     public boolean execute(final String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-        cordova.requestPermission(this, 0, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (!cordova.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            cordova.requestPermission(this, 0, Manifest.permission.ACCESS_FINE_LOCATION);
+        }
         final int duration = Toast.LENGTH_SHORT;
         // Shows a toast
-        Log.v(TAG,"mwDevice received:"+ action);
+        Log.v(TAG,"mwDevice received: " + action + " initialized: " + initialized);
         if(action.equals(INITIALIZE)){
             mwCallbackContexts.put(INITIALIZE, callbackContext);
+            if (bound && !initialized) {
+                mwCallbackContexts.get(INITIALIZE).sendPluginResult(new PluginResult(PluginResult.Status.OK,
+                        "initialized"));
+                initialized = true;
+            }
             return true;
         } else if(action.equals(CONNECT)){
             mwCallbackContexts.put(CONNECT, callbackContext);
@@ -147,16 +159,22 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
             return true;
         } else if(action.equals(SCAN_FOR_DEVICES)){
             mwCallbackContexts.put(SCAN_FOR_DEVICES, callbackContext);
-            if(initialized){
+            if(bound){
                 bluetoothScanner.startBleScan();
             }
             return true;
         } else if(action.equals(DISCONNECT)){
             mwBoard.disconnect();
             return true;
-        } else if(action.equals(SUPPORTED_MODULES)){
+        } else if(action.equals(SUPPORTED_MODULES)) {
             mwCallbackContexts.put(SUPPORTED_MODULES, callbackContext);
             supportedModules.getSupportedModules();
+            return true;
+        } else if (action.equals(SET_ADVERTISING_PARAMETERS)) {
+            mwSettings.setAdvertisingParameters(args);
+            return true;
+        } else if (action.equals(SET_CONNECTION_PARAMETERS)) {
+            mwSettings.setConnectionParameters(args);
             return true;
         } else if(action.equals(READ_RSSI)){
             mwCallbackContexts.put(READ_RSSI, callbackContext);
@@ -240,7 +258,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     public void onServiceConnected(ComponentName name, IBinder service){
         serviceBinder = (MetaWearBleService.LocalBinder) service;
         Log.i("MWDevice", "Service Connected");
-        initialized = true;
+        bound = true;
         if(mwCallbackContexts.get(CONNECT) != null){
             connectBoard();
         }else if(mwCallbackContexts.get(SCAN_FOR_DEVICES) != null){
@@ -250,13 +268,20 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         if(mwCallbackContexts.get(CONNECT) == null &&
            mwCallbackContexts.get(SCAN_FOR_DEVICES) == null)
         {
-            mwCallbackContexts.get(INITIALIZE).sendPluginResult(new PluginResult(PluginResult.Status.OK,
-                                                                             "initialized"));
+            Log.i("MWDevice", "Call initialize callback");
+            if (mwCallbackContexts.get(INITIALIZE) != null) {
+                initialized = true;
+                mwCallbackContexts.get(INITIALIZE).sendPluginResult(new PluginResult(PluginResult.Status.OK,
+                        "initialized"));
+            }
         }
     }
 
     @Override
-    public void onServiceDisconnected(ComponentName componentName) {}
+    public void onServiceDisconnected(ComponentName componentName) {
+        initialized = false;
+        bound = false;
+    }
 
 
 

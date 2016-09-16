@@ -29,11 +29,13 @@
       </service>
     </config-file>
     <config-file target='AndroidManifest.xml' parent='/manifest'>
+      <uses-permission android:name="android.permission.BLUETOOTH" />
       <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
       <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     </config-file>
     <framework src='src/android/build-extras.gradle' custom='true' type='gradleReference'/>
     <source-file src='src/android/MWDevice.java' target-dir='src/com/mbientlab/metawear/cordova'/>
+    <source-file src='src/android/MWSettings.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/RSSI.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/BatteryLevel.java' target-dir='src/com/mbientlab/metawear/cordova'/>
     <source-file src='src/android/SupportedModules.java' target-dir='src/com/mbientlab/metawear/cordova'/>

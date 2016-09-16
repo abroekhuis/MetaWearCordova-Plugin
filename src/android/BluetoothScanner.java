@@ -1,5 +1,6 @@
 package com.mbientlab.metawear.cordova;
 
+import android.bluetooth.le.BluetoothLeScanner;
 import android.util.Log;
 import android.os.Handler;
 import org.apache.cordova.PluginResult;
@@ -103,6 +104,7 @@ public class BluetoothScanner{
                 try {
                     resultObject.put("address",  bluetoothDevice.getAddress());
                     resultObject.put("rssi", String.valueOf(rssi));
+                    resultObject.put("name", bluetoothDevice.getName());
                     boards.put(bluetoothDevice.getAddress(), resultObject);
                 } catch (JSONException e){
                     Log.e("Metawear Cordova Error: ", e.toString());
@@ -112,6 +114,7 @@ public class BluetoothScanner{
         };
 
     public void startBleScan() {
+        Log.i("Metawear Cordova", "Start scan: " + isScanning);
         boards = new JSONObject();
         isScanning= true;
         scannerHandler.postDelayed(new Runnable() {
@@ -123,9 +126,13 @@ public class BluetoothScanner{
 
         ///< TODO: Use startScan method instead from API 21
         btAdapter.startLeScan(scanCallback);
+
+//        BluetoothLeScanner scanner = btAdapter.getBluetoothLeScanner();
+//        scanner.startScan(scanCallback);
     }
 
     public void stopBleScan() {
+        Log.i("Metawear Cordova", "Stop scan: " + isScanning);
         if (isScanning) {
             ///< TODO: Use stopScan method instead from API 21
             btAdapter.stopLeScan(scanCallback);
@@ -133,6 +140,7 @@ public class BluetoothScanner{
                                                          boards);
             pluginResult.setKeepCallback(true);
             mwDevice.getMwCallbackContexts().get(mwDevice.SCAN_FOR_DEVICES).sendPluginResult(pluginResult);
+            Log.i("Metawear Cordova", "Callback done");
             isScanning= false;
         }
     }

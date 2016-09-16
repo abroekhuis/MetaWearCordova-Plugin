@@ -38,19 +38,28 @@ public class MWGyroscope{
                 result.subscribe("gyro_stream_key", new MessageHandler() {
                         @Override
                         public void process(Message msg){
+                            long millis = msg.getTimestamp().getTimeInMillis();
                             CartesianFloat axes = msg.getData(CartesianFloat.class);
                             JSONObject resultObject = new JSONObject();
                             try {
                                 resultObject.put("x", axes.x());
                                 resultObject.put("y", axes.y());
                                 resultObject.put("z", axes.z());
+                                resultObject.put("time", millis);
                             } catch (JSONException e){
                                 Log.e("Metawear Cordova Error: ", e.toString());
                             }
-                            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
-                                                                         resultObject);
-                            pluginResult.setKeepCallback(true);
-                            mwDevice.getMwCallbackContexts().get(mwDevice.START_GYROSCOPE).sendPluginResult(pluginResult);
+
+                            final JSONObject obj = resultObject;
+                            mwDevice.cordova.getActivity().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
+                                            obj);
+                                    pluginResult.setKeepCallback(true);
+                                    mwDevice.getMwCallbackContexts().get(mwDevice.START_GYROSCOPE).sendPluginResult(pluginResult);
+                                }
+                            });
+
                             Log.i("Metawear Cordova Axis", axes.toString());
                         }
                     });

@@ -85,19 +85,27 @@ public class MWAccelerometer{
                 result.subscribe("accel_stream_key", new MessageHandler() {
                         @Override
                         public void process(Message msg){
+                            long millis = msg.getTimestamp().getTimeInMillis();
                             CartesianFloat axes = msg.getData(CartesianFloat.class);
                             JSONObject resultObject = new JSONObject();
                             try {
                                 resultObject.put("x", axes.x());
                                 resultObject.put("y", axes.y());
                                 resultObject.put("z", axes.z());
+                                resultObject.put("time", millis);
                             } catch (JSONException e){
                                 Log.e("Metawear Cordova Error", e.toString());
                             }
-                            PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
-                                                                         resultObject);
-                            pluginResult.setKeepCallback(true);
-                            mwDevice.getMwCallbackContexts().get(mwDevice.START_ACCELEROMETER).sendPluginResult(pluginResult);
+
+                            final JSONObject obj = resultObject;
+                            mwDevice.cordova.getActivity().runOnUiThread(new Runnable() {
+                                public void run() {
+                                    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
+                                            obj);
+                                    pluginResult.setKeepCallback(true);
+                                    mwDevice.getMwCallbackContexts().get(mwDevice.START_ACCELEROMETER).sendPluginResult(pluginResult);
+                                }
+                            });
                             Log.i("Metawear Cordova Axis", axes.toString());
                         }
                     });
@@ -106,21 +114,6 @@ public class MWAccelerometer{
 
     private Accelerometer getAccelerometer(){
         Accelerometer accelModule = null;
-
-        try {
-            Settings settings = mwDevice.getMwBoard().getModule(Settings.class);
-
-            Log.i("MetaWear Plugin", "Settings: " + settings);
-
-            settings.configureConnectionParameters()
-                    .setMinConnectionInterval(7.5f)
-                    .setMaxConnectionInterval(15f)
-                    .setSupervisorTimeout((short) 300)
-                    .setSlaveLatency((short) 0)
-                    .commit();
-        }catch(UnsupportedModuleException e){
-            Log.e("Metawear Cordova Error", e.toString());
-        }
 
         try {
             accelModule= mwDevice.getMwBoard().getModule(Accelerometer.class);
@@ -132,6 +125,22 @@ public class MWAccelerometer{
     }
 
     public void startAccelerometer(JSONArray arguments){
+//        try {
+//            Settings settings = mwDevice.getMwBoard().getModule(Settings.class);
+//
+//            Log.i("MetaWear Plugin", "Settings: " + settings);
+//
+//            settings.configureConnectionParameters()
+////                    .setMinConnectionInterval(10f)
+//                    .setMaxConnectionInterval(20f)
+////                    .setSupervisorTimeout((short) 6000)
+////                    .setSlaveLatency((short) 10)
+//                    .commit();
+//        }catch(UnsupportedModuleException e){
+//            Log.e("Metawear Cordova Error", e.toString());
+//        }
+
+
         Log.i("MetaWear Plugin", "Start accelerometer");
         double outputDataRate = 50;
         double axisSamplingRange = 4;
