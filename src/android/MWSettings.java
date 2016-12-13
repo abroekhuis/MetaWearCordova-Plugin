@@ -9,6 +9,8 @@ import org.json.JSONObject;
 
 public class MWSettings {
 
+    public static final String TAG = "com.mbientlab.metawear.cordova";
+
     private MWDevice mwDevice;
 
     public MWSettings(MWDevice device){
@@ -67,6 +69,8 @@ public class MWSettings {
 
         try {
             JSONObject argumentObject = arguments.getJSONObject(0);
+
+            Log.v(TAG, argumentObject.toString());
 
             if (argumentObject.has("minConnectionInterval")) {
                 connectionParameters.setMinConnectionInterval((float) argumentObject.getDouble("minConnectionInterval"));

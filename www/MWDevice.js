@@ -169,3 +169,8 @@ module.exports.stopMagnetometer = function(){
     console.log("MWDevice.js: stopMagnetometer");
     exec(null, null, "MWDevice", 'stopMagnetometer', []);
 }
+
+module.exports.startBuzzer = function(buzzerArguments){
+    console.log("MWDevice.js: start Buzzer");
+    exec(null, null, "MWDevice", 'startBuzzer', [buzzerArguments]);
+}

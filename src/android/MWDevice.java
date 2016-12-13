@@ -71,6 +71,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     public static final String MODULE_NOT_SUPPORTED = "MODULE_NOT_SUPPORTED";
     public static final String SET_ADVERTISING_PARAMETERS = "setAdvertisingParameters";
     public static final String SET_CONNECTION_PARAMETERS = "setConnectionParameters";
+    public static final String START_BUZZER = "startBuzzer";
 
     private MetaWearBleService.LocalBinder serviceBinder;
 
@@ -91,6 +92,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     private BluetoothScanner bluetoothScanner;
     private GpioModule gpioModule;
     private MWSettings mwSettings;
+    private MWHaptic mwHaptic;
     
     /**
      * Constructor.
@@ -118,6 +120,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         mwCallbackContexts = new HashMap<String, CallbackContext>(); 
         bluetoothScanner = new BluetoothScanner(this);
         mwSettings = new MWSettings(this);
+        mwHaptic = new MWHaptic(this);
         Context applicationContext = cordova.getActivity().getApplicationContext();
         applicationContext.bindService(
                                        new Intent(cordova.getActivity(),
@@ -219,8 +222,11 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
             mwCallbackContexts.put(START_MAGNETOMETER, callbackContext);
             mwMagnetometer.startMagnetometer(args);
             return true;
-        } else if(action.equals(STOP_MAGNETOMETER)){
+        } else if(action.equals(STOP_MAGNETOMETER)) {
             mwMagnetometer.stopMagnetometer();
+            return true;
+        } else if(action.equals(START_BUZZER)) {
+            mwHaptic.startBuzzer(args);
             return true;
         } else if(action.equals(GPIO_READ_ANALOG)){
             int pin = (Integer) args.get(0);
