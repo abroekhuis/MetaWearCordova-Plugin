@@ -5,6 +5,7 @@
 
 @interface MWDevice : CDVPlugin
 
+- (void)initialize:(CDVInvokedUrlCommand*)command;
 - (void)scanForDevices:(CDVInvokedUrlCommand*)command;
 - (void)connect:(CDVInvokedUrlCommand*)command;
 - (void)readRssi:(CDVInvokedUrlCommand*)command;

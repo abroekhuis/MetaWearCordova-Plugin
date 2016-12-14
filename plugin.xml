@@ -72,6 +72,7 @@
     <header-file src='src/ios/vendor/headers/MBLEvent.h'/>
     <header-file src='src/ios/vendor/headers/MBLRegister.h'/>
     <header-file src='src/ios/vendor/headers/MBLModule.h'/>
+    <header-file src='src/ios/vendor/headers/MBLDeviceInfo.h'/>
     <header-file src='src/ios/vendor/headers/BFTask+MBLExtensions.h'/>
     <header-file src='src/ios/vendor/headers/MBLLED.h'/>
     <header-file src='src/ios/vendor/headers/Bolts/Bolts.h'/>

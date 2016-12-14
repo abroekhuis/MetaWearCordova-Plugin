@@ -11,7 +11,7 @@ var exec = require('cordova/exec');
 
 module.exports.initialize = function(success, failure){
     console.log("MWDevice.js: initialize");
-    exec(success,  failure,  "MWDevice","initialize",[]);
+    exec(success,  failure,  "MWDevice", "initialize",[]);
 }
 
 module.exports.connect = function(macAddress, success, failure){

@@ -20,6 +20,8 @@
   NSLog(@"startAccelerometer called");
 
   if(mwDevice.connectedDevice.gyro != nil){
+    mwDevice.connectedDevice.gyro.sampleFrequency = 50;
+
     [mwDevice.connectedDevice.gyro.dataReadyEvent startNotificationsWithHandlerAsync:^(MBLGyroData *gyroscopeData, NSError *error){
         NSLog(@"Gyroscope callback %@", gyroscopeData);
         NSMutableDictionary *gyroscopeReading = [NSMutableDictionary dictionaryWithDictionary:@{}];

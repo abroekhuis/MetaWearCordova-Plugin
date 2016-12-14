@@ -18,6 +18,7 @@
 - (void)startAccelerometer:(CDVInvokedUrlCommand*)command
 {
   NSLog(@"startAccelerometer called");
+  mwDevice.connectedDevice.accelerometer.sampleFrequency = 50;
   [mwDevice.connectedDevice.accelerometer.dataReadyEvent startNotificationsWithHandlerAsync:^(MBLAccelerometerData *accelerometerData, NSError *error){
       CDVPluginResult* pluginResult = nil;
       NSLog(@"Accelerometer callback %@", accelerometerData);

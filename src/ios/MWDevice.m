@@ -3,6 +3,7 @@
 #import "BatteryLevel.h"
 #import <Cordova/CDV.h>
 #import "MBLMetaWear.h"
+#import "MBLDeviceInfo.h"
 #import "MBLMetaWearManager.h"
 #import "MWAccelerometer.h"
 #import "LEDModule.h"
@@ -23,6 +24,15 @@
   MWSupportedModules *supportedModules;
 }
 
+- (void)initialize:(CDVInvokedUrlCommand*)command
+{
+  NSLog(@"Initialize");
+  CDVPluginResult* pluginResult = nil;
+  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"initialized"];
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+}
+
 - (void)scanForDevices:(CDVInvokedUrlCommand*)command
 {
   CDVPluginResult* pluginResult = nil;
@@ -38,6 +48,7 @@
         NSMutableDictionary *entry = [NSMutableDictionary dictionaryWithDictionary:@{}];
         entry[@"address"] = device.identifier.UUIDString;
         entry[@"rssi"] = [device.discoveryTimeRSSI stringValue];
+        entry[@"name"] = device.name;
         boards[device.identifier.UUIDString] = entry;
         NSLog(@"Found MetaWear: %@", device);
         [device rememberDevice];
@@ -204,6 +215,26 @@
 {
   NSLog(@"stop accelerometer on %@", gyroscope);
   [gyroscope stopGyroscope:command];
+}
+
+- (void)readDeviceInformation:(CDVInvokedUrlCommand*)command
+{
+  CDVPluginResult* pluginResult = nil;
+  NSLog(@"read device information");
+  MBLDeviceInfo *deviceInfo = [_connectedDevice deviceInfo];
+  NSMutableDictionary *deviceInformation = [NSMutableDictionary dictionaryWithDictionary:@{}];
+
+  deviceInformation [@"manufacturer"] = deviceInfo.manufacturerName;
+  deviceInformation [@"modelNumber"] = deviceInfo.modelNumber;
+  deviceInformation [@"serialNumber"] = deviceInfo.serialNumber;
+  deviceInformation [@"hardwareRevision"] = deviceInfo.hardwareRevision;
+  deviceInformation [@"firmwareRevision"] = deviceInfo.firmwareRevision;
+
+  pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:deviceInformation];
+  [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
+
+  NSLog(@"Callback id %@", command.callbackId);
+  [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 @end
