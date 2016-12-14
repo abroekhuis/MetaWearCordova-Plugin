@@ -70,8 +70,10 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     public static final String STATUS = "status";
     public static final String MODULE_NOT_SUPPORTED = "MODULE_NOT_SUPPORTED";
     public static final String SET_ADVERTISING_PARAMETERS = "setAdvertisingParameters";
+    public static final String READ_ADVERTISING_PARAMETERS = "readAdvertisingParameters";
     public static final String SET_CONNECTION_PARAMETERS = "setConnectionParameters";
     public static final String START_BUZZER = "startBuzzer";
+    public static final String READ_DEVICE_INFORMATION = "readDeviceInformation";
 
     private MetaWearBleService.LocalBinder serviceBinder;
 
@@ -93,6 +95,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
     private GpioModule gpioModule;
     private MWSettings mwSettings;
     private MWHaptic mwHaptic;
+    private DeviceInformation mwDeviceInformation;
     
     /**
      * Constructor.
@@ -121,6 +124,7 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         bluetoothScanner = new BluetoothScanner(this);
         mwSettings = new MWSettings(this);
         mwHaptic = new MWHaptic(this);
+        mwDeviceInformation = new DeviceInformation(this);
         Context applicationContext = cordova.getActivity().getApplicationContext();
         applicationContext.bindService(
                                        new Intent(cordova.getActivity(),
@@ -176,6 +180,10 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
         } else if (action.equals(SET_ADVERTISING_PARAMETERS)) {
             mwSettings.setAdvertisingParameters(args);
             return true;
+        } else if (action.equals(READ_ADVERTISING_PARAMETERS)) {
+            mwCallbackContexts.put(READ_ADVERTISING_PARAMETERS, callbackContext);
+            mwSettings.readAdvertisingParameters();
+            return true;
         } else if (action.equals(SET_CONNECTION_PARAMETERS)) {
             mwSettings.setConnectionParameters(args);
             return true;
@@ -227,6 +235,10 @@ public class MWDevice extends CordovaPlugin implements ServiceConnection{
             return true;
         } else if(action.equals(START_BUZZER)) {
             mwHaptic.startBuzzer(args);
+            return true;
+        } else if(action.equals(READ_DEVICE_INFORMATION)) {
+            mwCallbackContexts.put(READ_DEVICE_INFORMATION, callbackContext);
+            mwDeviceInformation.readDeviceInformation();
             return true;
         } else if(action.equals(GPIO_READ_ANALOG)){
             int pin = (Integer) args.get(0);

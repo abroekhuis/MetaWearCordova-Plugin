@@ -1,8 +1,10 @@
 package com.mbientlab.metawear.cordova;
 
 import android.util.Log;
+import com.mbientlab.metawear.AsyncOperation;
 import com.mbientlab.metawear.UnsupportedModuleException;
 import com.mbientlab.metawear.module.Settings;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +29,45 @@ public class MWSettings {
         }
 
         return settings;
+    }
+
+    private final AsyncOperation.CompletionHandler<Settings.AdvertisementConfig> readAdvertisingParametersHandler =
+            new AsyncOperation.CompletionHandler<Settings.AdvertisementConfig>() {
+                @Override
+                public void success(Settings.AdvertisementConfig result) {
+                    Log.i("Metawear Cordova AdvertisingParameters: ", result.toString());
+
+                    JSONObject resultObject = new JSONObject();
+                    try {
+                        resultObject.put("deviceName", result.deviceName());
+                        resultObject.put("interval", result.interval());
+                        resultObject.put("scanResponse", result.scanResponse());
+                        resultObject.put("timeout", result.timeout());
+                        resultObject.put("txPower", result.txPower());
+                    } catch (JSONException e){
+                        Log.e("Metawear Cordova Error", e.toString());
+                    }
+
+                    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK,
+                            resultObject);
+                    mwDevice.getMwCallbackContexts().get(mwDevice.READ_ADVERTISING_PARAMETERS).sendPluginResult(pluginResult);
+                }
+
+                @Override
+                public void failure(Throwable error) {
+                    Log.i("Metawear Cordova Error: ", error.toString());
+                    PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR,
+                            "ERROR");
+                    mwDevice.getMwCallbackContexts().get(mwDevice.READ_ADVERTISING_PARAMETERS).sendPluginResult(pluginResult);
+                }
+            };
+
+    public void readAdvertisingParameters() {
+        Settings settings = getSettings();
+
+        Log.i("Metawear Cordova", "read adv");
+        AsyncOperation<Settings.AdvertisementConfig> result = settings.readAdConfig();
+        result.onComplete(readAdvertisingParametersHandler);
     }
 
     public void setAdvertisingParameters(JSONArray arguments) {

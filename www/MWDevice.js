@@ -33,6 +33,11 @@ module.exports.setAdvertisingParameters = function(parameters) {
     exec(null, null, 'MWDevice', 'setAdvertisingParameters', [parameters]);
 };
 
+module.exports.readAdvertisingParameters = function(success, failure) {
+    console.log('MWDevice.js: readAdvertisingParameters');
+    exec(success, failure, 'MWDevice', 'readAdvertisingParameters', []);
+};
+
 module.exports.setConnectionParameters = function(parameters) {
     console.log('MWDevice.js: setConnectionParameters');
     exec(null, null, 'MWDevice', 'setConnectionParameters', [parameters]);
@@ -52,6 +57,11 @@ module.exports.readBatteryLevel = function(success, failure){
     console.log("MWDevice.js: readBatteryLevel");
     exec(success, failure, "MWDevice", 'readBatteryLevel', []);
 }
+
+module.exports.readDeviceInformation = function(success, failure) {
+    console.log('MWDevice.js: readDeviceInformation');
+    exec(success, failure, 'MWDevice', 'readDeviceInformation', []);
+};
 
 module.exports.playLED = function(ledArguments){
     /*channel, highIntensity, lowIntensity,
