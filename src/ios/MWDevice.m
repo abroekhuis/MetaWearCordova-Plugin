@@ -237,4 +237,12 @@
   [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
+- (void)setAdvertisingParameters:(CDVInvokedUrlCommand*)command
+{
+  NSMutableDictionary* arguments = [command.arguments objectAtIndex:0];
+  NSString *name = arguments[@"deviceName"];
+
+  _connectedDevice.name = name;
+}
+
 @end
